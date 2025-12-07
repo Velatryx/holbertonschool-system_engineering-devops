@@ -1,0 +1,65 @@
+Web Infrastructure for www.foobar.com
+To set up a robust, secure infrastructure for www.foobar.com
+
+, here’s how I’d think about it:
+
+I’m going to need three main servers:
+
+Web Server: This is the entry point for all incoming traffic. It handles requests, serves static content like images and styles, and passes more complex requests to the application server.
+
+Application Server: This is where the core logic of the website lives. When someone interacts with the site—whether they’re logging in, posting something, or searching—this server handles those actions and communicates with the database when needed.
+
+Database Server: This is where all the data gets stored. It holds everything from user info to site content and transactions. I’d use MySQL or something similar for this purpose.
+
+Why Firewalls Are Necessary
+
+I’d set up three firewalls in key areas of the network to ensure that everything stays secure:
+
+First Firewall: Between the internet and the load balancer. This keeps out unwanted traffic before it even hits the network. The goal is to block any bad actors from getting close to the servers.
+
+Second Firewall: Between the load balancer and the web servers. This ensures that only traffic coming through the load balancer gets to the web servers, blocking direct access from the outside.
+
+Third Firewall: Between the web servers and the database. The database holds all the sensitive data, so I want to make sure it’s only accessible by the web and app servers, not anyone else.
+
+This layered approach to firewalls adds multiple levels of security to ensure that even if one part of the network is compromised, the rest of it is still safe.
+
+Serving Traffic Over HTTPS
+
+Serving traffic over HTTPS is essential. When users interact with the site, they’ll be sending personal data—like passwords and payment details—so I need to encrypt that data during transit. Without encryption, attackers could intercept and steal sensitive information.
+
+To enable HTTPS, I’ll need an SSL certificate for www.foobar.com. The best approach is to terminate SSL at the load balancer. This means the load balancer handles the encryption and decryption of the traffic, passing it to the web server unencrypted (but internally, I need to ensure that this communication is secured too, usually with internal TLS). It’s a good practice to offload the SSL work to the load balancer to reduce the load on the web servers, which can focus purely on serving content.
+
+Monitoring the Infrastructure
+
+I’d need to actively monitor the servers to ensure everything is running smoothly. Here’s how I’d break it down:
+
+Web Server Monitoring: This checks the health of the web servers, tracking response times, error rates, and overall system performance. Is the server slow? Are there too many errors?
+
+App Server Monitoring: I want to know how well the application is running. Are requests being processed properly? Is there any bottleneck in the application logic? I’d track API response times and failures here.
+
+Database Monitoring: This focuses on the database performance. Are queries running quickly? Is replication working properly? I want to catch any slow queries or potential issues before they cause a problem.
+
+I’d use a centralized monitoring system (like Sumologic, Datadog, or similar) to collect all this data. The monitoring agents installed on each server would send real-time performance metrics. Alerts would be set up to notify me if something goes wrong—whether it’s high CPU usage, slow response times, or database errors.
+
+Why Monitoring Matters
+
+The goal of monitoring is to catch issues early. If my web server starts responding slowly or my database is overloaded, I want to know before it affects users. This means I can act fast to fix issues—whether it’s scaling resources or investigating errors.
+
+For example, if I want to track QPS (queries per second), I would use monitoring to measure the traffic the web servers are handling. I’d set up a dashboard to track this and look for spikes in traffic. If the QPS suddenly jumps, I’d want to know if it's legitimate traffic or a possible attack. Alerts would let me know if the traffic crosses a threshold.
+
+Potential Issues with This Setup
+
+SSL Termination at the Load Balancer:
+SSL termination at the load balancer is common, but there are some risks. If I don’t also secure the traffic between the load balancer and the web servers (with internal TLS), then sensitive data could be exposed within the internal network. This is something I’d need to ensure is locked down.
+
+Single MySQL Server for Writes:
+Having a single MySQL server for write operations is a serious limitation. If this server goes down, my whole site loses the ability to write data (new user signups, new posts, etc.). To solve this, I would implement MySQL replication—setting up a master server for writes and one or more replicas for reads. This would not only provide redundancy but also improve scalability by balancing the load between servers.
+
+Mixing Web, App, and DB on the Same Server:
+Putting everything on the same server might be tempting for simplicity, but it causes a few problems:
+
+Resource Contention: If the database gets really busy, it can consume all the resources (CPU, RAM), which would affect the web and app servers, making the whole system slow.
+
+Scaling Issues: If one part of the server is overloaded (say, the database), I can’t scale just that part. I’d have to scale the entire server, which is inefficient.
+
+Single Point of Failure: If this one server goes down, I lose everything—web server, app logic, and database. It’s much safer to separate these components so that if one part fails, the others can keep running.
