@@ -1,0 +1,63 @@
+###Components
+Web Server (Nginx);
+Role: Serves static content and forwards dynamic requests to the application server.
+Why Added: Optimizes static content delivery, reducing load on the application server.
+
+###Application Server
+Role: Handles dynamic content and business logic, interacts with the database.
+Why Added: Separates logic from the web server for better performance and scalability.
+
+###Database Server (MySQL)
+Role: Stores and retrieves application data.
+Why Added: Isolates the database for better performance and resource management.
+
+###Load Balancer (HAproxy)
+Role: Distributes traffic to web/application servers for load balancing.
+Why Added: Ensures high availability and balances traffic load across servers.
+
+###Key Concepts
+Load Balancer Cluster (HAproxy):
+Why Clustered: Provides redundancy and high availability. If one fails, the other takes over.
+How It Works: Distributes traffic evenly using algorithms like round-robin or least connections.
+
+##Web Server:
+Role: Serves static content, passes dynamic requests to the application server.
+Why Separate: Allows independent scaling and resource optimization for static vs dynamic content.
+
+###Application Server:
+Role: Handles dynamic content and business logic.
+Why Separate: Improves performance by offloading application logic from the web server.
+
+Database Server:
+
+Role: Manages data storage and queries.
+
+Why Separate: Optimizes performance and resources dedicated to data management.
+
+Flow
+
+User Request: Sent to the HAproxy load balancer.
+
+Load Balancer: Routes traffic to the web server.
+
+Web Server (Nginx): Serves static content, forwards dynamic requests to the application server.
+
+Application Server: Processes logic, queries the database.
+
+Database Server: Handles data requests.
+
+Response: Sent back to the user via the web server.
+
+###enefits
+
+!Scalability: Easily add more web or application servers.
+!Fault Tolerance: Load balancer cluster and database failover ensure availability.
+!Performance: Each server handles specific tasks, improving efficiency.
+
+###Potential Issues
+
+!SPOF: Single points of failure (e.g., database or load balancer) need redundancy.
+
+!Security: Implement HTTPS and firewalls to protect data.
+
+Complexity: More servers require effective monitoring and management tools.
