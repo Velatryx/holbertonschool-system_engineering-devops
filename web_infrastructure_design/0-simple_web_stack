@@ -1,81 +1,16 @@
-This is a high-level design of a minimal one-server web infrastructure powering the website www.foobar.com
-. The goal is to show how each piece works together, starting from the moment a user tries to access the site.
+This is a high-level view of a simple, one-server web infrastructure running the website www.foobar.com
+. The goal is to show how each part works together from the moment a user visits the site.
 
-How a User Reaches the Website
+When someone enters www.foobar.com, the browser asks DNS to convert that name into an IP address,
+Then the DNS responds with 8.8.8.8, the public IP of our server. The browser then connects over HTTP/HTTPS, and the server takes over: Nginx receives the request, the application server processes the logic, and MySQL supplies the needed data. 
+The final response is sent back to the user’s browser.
 
-A user enters www.foobar.com
- in their browser.
+A domain name exists so users don’t have to memorize IPs, and the www subdomain is set as an A record, pointing directly to the server. Everything—web server, application server, code base, and database—lives on this one machine.
 
-The browser asks DNS to translate that name into an IP address.
+Nginx handles all incoming traffic, serving static files and forwarding dynamic requests to the application server. 
+The application server runs the backend logic, talks to the MySQL database, and generates dynamic content based on the code stored locally.
 
-DNS replies with 8.8.8.8, which is the public IP of our server.
+Communication between the user and the server happens via HTTP/HTTPS over TCP/IP, the standard protocol of the web.
 
-The browser connects to that server over HTTP/HTTPS.
-
-The server receives the request, the web server routes it, the application server handles the logic, and the database provides the needed data before a response is returned to the user.
-
-Infrastructure Components:
-
-1. Domain name
-A domain name makes the website easy for humans to reach. Instead of remembering an IP address like 8.8.8.8, users simply type www.foobar.com
-.
-It’s managed through DNS, which maps names to IPs.
-
-2. DNS record
-The www in www.foobar.com
- is configured as an A record, meaning it points the hostname directly to an IPv4 address — here, 8.8.8.8.
-
-3. Server
-This setup uses just one server. It can be a physical machine or a cloud instance, but it has one job: run all components of the stack.
-The server hosts:
-
-Nginx (web server)
-
-Application server;
-
-Application code;
-
-MySQL database;
-
-4. Web Server (Nginx)
-Nginx is the first piece that receives incoming web traffic.
-Its role:
-
-Serve static content quickly (HTML, CSS, images);
-
-Forward dynamic requests to the application server;
-It essentially acts as the “front door” of the infrastructure.
-
-5. Application Server
-
-This is where the logic of the website actually runs.
-It:
-
-Executes backend code;
-Handles routes, authentication, and business logic;
-Connects to the database to retrieve or save data;
-The application server produces the dynamic responses that Nginx returns to the user.
-
-6. Appliction Files (Code Base)
-This is the website’s actual code — the backend scripts, templates, and all logic that powers the application.
-
-7. Database (MySQL)
-MySQL stores the structured data the application needs — users, orders, posts, sessions, and so on.
-The application server interacts with it using SQL queries.
-
-8. Communication With the User
-The user’s browser and the server communicate using HTTP/HTTPS, transported over TCP/IP.
-
-Weaknesses of This Architecture:
-
-1. Single Point of Failure
-Since everything lives on one server, if that server goes offline for any reason — hardware failure, OS crash, accidental deletion — the entire website becomes unreachable.
-
-2. Maintenance Leads to Downtime
-Updates to the application, server restarts, security patches, or database maintenance all interrupt service.
-With no secondary server, even routine tasks cause outages.
-
-3. No Ability to Scale
-If traffic suddenly increases, this server has no backup to share the load.
-!Once CPU, memory, or bandwidth maxes out:
-the site slows down, requests time out, and the server may fully crash.
+This setup works, but it has clear limitations: one server means a single point of failure, so any crash takes the entire site down. 
+Maintenance also forces downtime because there’s no backup server to take over during updates. And if traffic spikes, the server can’t scale—once resources max out, the site slows down or becomes completely unavailable.
