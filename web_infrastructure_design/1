@@ -1,0 +1,56 @@
+Step 1: User Access
+
+User: A user visits www.foobar.com via their browser.
+
+Step 2: Domain Name Resolution
+
+DNS resolves www.foobar.com to the IP of the load balancer (e.g., 8.8.8.9).
+
+Step 3: Load Balancer (HAproxy)
+
+Role: Distributes incoming traffic across two web/application servers (Server A and Server B) for load balancing.
+
+Distribution Algorithm: Round-robin (alternates traffic evenly between servers).
+
+Setup: Active-Active — Both servers are active and share the load. If one server fails, traffic is rerouted to the other.
+
+Step 4: Web/Application Servers (Server A and Server B)
+
+Components:
+Web Server (Nginx): Serves static files and forwards requests to the application server.
+
+Application Server: Runs the application logic and processes dynamic content.
+
+Database (MySQL): Each server hosts a Primary-Replica setup.
+
+Step 5: Database (Primary-Replica)
+
+Primary (Master): Handles write operations (insert, update).
+
+Replica (Slave): Handles read operations (select) and replicates data from the Primary.
+
+Key Roles
+
+Load Balancer (HAproxy): Distributes traffic to servers, ensuring high availability and scalability.
+
+Web/Application Servers: Host the application and handle web requests. Each has a copy of the code and interacts with the database.
+
+Database (Primary-Replica): The Primary handles writes; the Replica handles reads, improving performance and availability.
+
+Potential Issues
+
+Single Point of Failure (SPOF):
+
+Load Balancer: If HAproxy fails, the system becomes unavailable.
+
+Primary Database: If the Primary MySQL fails, write operations are halted until failover occurs.
+
+Security Issues:
+
+No Firewall: No firewall protection for servers.
+
+No HTTPS: Communication is not encrypted, risking data interception.
+
+No Monitoring:
+
+Lack of monitoring tools like Prometheus or Grafana means issues may go unnoticed, leading to downtime.
