@@ -2,10 +2,12 @@ This is a high-level view of a simple, one-server web infrastructure running the
 . The goal is to show how each part works together from the moment a user visits the site.
 
 When someone enters www.foobar.com, the browser asks DNS to convert that name into an IP address,
-Then the DNS responds with 8.8.8.8, the public IP of our server. The browser then connects over HTTP/HTTPS, and the server takes over: Nginx receives the request, the application server processes the logic, and MySQL supplies the needed data. 
+Then the DNS responds with 8.8.8.8, the public IP of our server. The browser then connects over HTTP/HTTPS, and the server takes over: 
+Nginx receives the request, the application server processes the logic, and MySQL supplies the needed data. 
 The final response is sent back to the user’s browser.
 
-A domain name exists so users don’t have to memorize IPs, and the www subdomain is set as an A record, pointing directly to the server. Everything—web server, application server, code base, and database—lives on this one machine.
+A domain name exists so users don’t have to memorize IPs, and the www subdomain is set as an A record, pointing directly to the server. 
+Everything—web server, application server, code base, and database—lives on this one machine.
 
 Nginx handles all incoming traffic, serving static files and forwarding dynamic requests to the application server. 
 The application server runs the backend logic, talks to the MySQL database, and generates dynamic content based on the code stored locally.
@@ -13,4 +15,5 @@ The application server runs the backend logic, talks to the MySQL database, and 
 Communication between the user and the server happens via HTTP/HTTPS over TCP/IP, the standard protocol of the web.
 
 This setup works, but it has clear limitations: one server means a single point of failure, so any crash takes the entire site down. 
-Maintenance also forces downtime because there’s no backup server to take over during updates. And if traffic spikes, the server can’t scale—once resources max out, the site slows down or becomes completely unavailable.
+Maintenance also forces downtime because there’s no backup server to take over during updates. 
+And if traffic spikes, the server can’t scale—once resources max out, the site slows down or becomes completely unavailable.
